@@ -1,1 +1,1 @@
-File type
+symbols, and inhabit symbols
