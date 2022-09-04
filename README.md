@@ -1,1 +1,1 @@
- File type: School
+A script  that creates an empty file called hello
