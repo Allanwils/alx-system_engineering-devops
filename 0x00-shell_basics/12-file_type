@@ -1,1 +1,2 @@
-ls [option] file
+#!/bin/bash
+file /tmp/iamafile
