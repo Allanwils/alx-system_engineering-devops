@@ -1,1 +1,1 @@
-A script  that creates an empty file called hello
+0x00. Shell, basics
