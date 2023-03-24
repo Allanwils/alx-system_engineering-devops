@@ -1,3 +1,5 @@
+# creates a file in /tmp
+
 file { '/tmp/school':
   ensure  => file,
   mode    => '0744',
@@ -5,3 +7,5 @@ file { '/tmp/school':
   group   => 'www-data',
   content => 'I love Puppet',
 }
+
+notify { 'Finished catalog run': }
