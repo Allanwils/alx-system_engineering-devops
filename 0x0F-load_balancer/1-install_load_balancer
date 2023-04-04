@@ -1,57 +1,40 @@
 #!/usr/bin/env bash
 
-# Installs, configures, and starts the load balancer
-# the load balancer's configuration
+# Configure new Ubuntu machine to serve as load balancer
 
-sudo apt-get update
-sudo apt-get -y install --no-install-recommends software-properties-common
-sudo add-apt-repository -y ppa:vbernat/haproxy-2.4
-sudo apt-get -y install haproxy
+# Install load balancer
+function install_load_balancer {
+    sudo apt-get update
+    sudo apt-get -y install haproxy
+    sudo systemctl enable haproxy
+}
 
-
-DOMAIN_NAME='102967-servers'
-INIT_FILE='/etc/default/haproxy'
-CONFIG_FILE='/etc/haproxy/haproxy.cfg'
-HAPROXY_LB_CONFIG=\
-"
-#--$DOMAIN_NAME-params-begin--
-backend $DOMAIN_NAME-backend
-    balance roundrobin
-    server 102967-web-01 34.232.70.178:80 check
-    server 102967-web-02 54.174.206.246:80 check
-frontend $DOMAIN_NAME-frontend
+# Configure load balancer
+function configure_load_balancer {
+    sudo bash -c 'cat > /etc/haproxy/haproxy.cfg <<EOF
+frontend web-frontend
     bind *:80
     mode http
-    default_backend $DOMAIN_NAME-backend
-#--$DOMAIN_NAME-params-end--
-"
+    default_backend web-backend
 
-[ -f "$INIT_FILE" ] || touch "$INIT_FILE"
-[ -f "$CONFIG_FILE" ] || touch "$CONFIG_FILE"
+backend web-backend
+    mode http
+    balance roundrobin
+    server web-01 34.232.70.178:80 check
+    server web-02 54.174.206.246:80 check
+EOF'
+}
 
-CONFIG_WORDS=$(grep -Eco "$DOMAIN_NAME-backend" < $CONFIG_FILE)
+# Restart load balancer service
+function restart_load_balancer {
+    sudo systemctl restart haproxy
+}
 
-if [ "$(grep -Eco '^ENABLED=[01]$' < $INIT_FILE)" -gt 0 ]; then
-    sed -i 's/^ENABLED=0$/ENABLED=1/' "$INIT_FILE"
-else
-    echo 'ENABLED=1' >> $INIT_FILE
-fi
+# Main script
+function main {
+    install_load_balancer
+    configure_load_balancer
+    restart_load_balancer
+}
 
-if [ "$CONFIG_WORDS" -eq 0 ]; then
-    echo -e "$HAPROXY_LB_CONFIG" >> $CONFIG_FILE
-else
-    start_tkn="#--$DOMAIN_NAME-params-begin--"
-    end_tkn="#--$DOMAIN_NAME-params-end--"
-    a=$(grep -onE "$start_tkn" < "$CONFIG_FILE" | cut -d : -f1)
-    b=$(grep -onE "$end_tkn" < "$CONFIG_FILE" | cut -d : -f1)
-    a=$((a - 1))
-    b=$((b + 1))
-    sed -i "$a,$b"d "$CONFIG_FILE"
-    echo -en "$HAPROXY_LB_CONFIG" >> $CONFIG_FILE
-fi
-
-if [ "$(pgrep -c haproxy)" -le 0 ]; then
-    service haproxy start
-else
-    service haproxy restart
-fi
+main
