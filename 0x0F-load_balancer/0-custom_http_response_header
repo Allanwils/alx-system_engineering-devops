@@ -1,44 +1,15 @@
 #!/usr/bin/env bash
 
-# Update package list and install Nginx
-sudo apt-get -y update
-sudo apt-get -y install nginx
+# create custom HTTP header file
+# configure web-02 to be identical to web-01
+# enable custom HTTP header file
 
-# Allow Nginx HTTP traffic
-sudo ufw allow 'Nginx HTTP'
+sudo apt-get update
+sudo apt-get install -y nginx
 
-# Create directory structure for web server
-sudo mkdir -p /var/www/html /var/www/error
+echo "add_header X-Served-By \$hostname;" | sudo tee /etc/nginx/conf.d/custom-http-header.conf > /dev/null
 
-# Set permissions for web server directories
-sudo chmod -R 755 /var/www
+sudo ln -s /etc/nginx/conf.d/custom-http-header.conf /etc/nginx/conf.d/
 
-# Create sample index and 404 error pages
-echo 'Hello World!' > /var/www/html/index.html
-echo "Ceci n'est pas une page" > /var/www/html/404.html
-
-# Define Nginx server block configuration
-server_config="server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	root /var/www/html;
-	index index.html index.htm index.nginx-debian.html;
-	server_name _;
-	add_header X-Served-By \$hostname;
-	location / {
-		try_files \$uri \$uri/ =404;
-	}
-	if (\$request_filename ~ redirect_me){
-		rewrite ^ https://youtube.com permanent;
-	}
-	error_page 404 /404.html;
-	location = /404.html {
-		internal;
-	}
-}"
-
-# Write Nginx server block configuration to default site
-echo "$server_config" | sudo tee /etc/nginx/sites-enabled/default >/dev/null
-
-# Restart Nginx
-sudo service nginx restart
+# Restart Nginx to apply new configuration
+sudo systemctl restart nginx
