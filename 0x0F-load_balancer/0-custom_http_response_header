@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# create custom HTTP header file
-# configure web-02 to be identical to web-01
-# enable custom HTTP header file
+# The script configures web-02 to be identical to web-01,creates and enables custom HTTP header file
 
 sudo apt-get update
 sudo apt-get install -y nginx
