@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-# Adds a  stable version of nginx
+# Adds a stable version of nginx
 exec { 'add nginx stable repo':
   command => 'sudo add-apt-repository ppa:nginx/stable',
   path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
 }
 
-# updates  software packages list
+# updates software packages list
 exec { 'update packages':
   command => 'apt-get update',
   path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -17,10 +17,10 @@ package { 'nginx':
   ensure     => 'installed',
 }
 
-# creates a  custom header configuration file
+# creates a custom header configuration file
 file { '/etc/nginx/conf.d/custom_header.conf':
   ensure  => file,
-  content => "add_header X-Served-By 102967-web-02,
+  content => "add_header X-Served-By 102967-web-02;",
 }
 
 # removes default nginx configuration
@@ -28,7 +28,7 @@ file { '/etc/nginx/sites-enabled/default':
   ensure => absent,
 }
 
-# adds a  redirection and error page
+# adds a redirection and error page
 file { 'Nginx custom config file':
   ensure  => file,
   path    => '/etc/nginx/sites-enabled/custom_config',
@@ -40,7 +40,7 @@ file { 'Nginx custom config file':
     index index.html index.htm index.nginx-debian.html;
     server_name _;
 
-    # Includes a  custom header configuration file
+    # Includes a custom header configuration file
     include /etc/nginx/conf.d/custom_header.conf;
 
     location / {
