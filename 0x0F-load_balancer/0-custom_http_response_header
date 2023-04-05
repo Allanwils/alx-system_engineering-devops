@@ -1,9 +1,11 @@
 #!/bin/env bash
 
-# The script Installs Nginx and configures it to add a custom header to its HTTP response
+# Installs Nginx, configures it to add a custom header to its HTTP response.
 sudo apt update
 sudo apt install -y nginx
 
-echo "add_header X-Served-By \$hostname;" | sudo tee -a /etc/nginx/nginx.conf
+SERVER_HOSTNAME="102967-web-01"
+
+echo "add_header X-Served-By $SERVER_HOSTNAME;" | sudo tee -a /etc/nginx/nginx.conf
 
 sudo systemctl restart nginx
