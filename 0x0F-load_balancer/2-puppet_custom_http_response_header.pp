@@ -1,4 +1,4 @@
-# Adds a  stable version of nginx
+# adds a stable version of nginx
 exec { 'add nginx stable repo':
   command => 'sudo add-apt-repository ppa:nginx/stable',
   path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -10,49 +10,63 @@ exec { 'update packages':
   path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
 }
 
-# installs nginx
+# installs  nginx
 package { 'nginx':
   ensure     => 'installed',
 }
 
-# creates a  custom header configuration file
-file { '/etc/nginx/conf.d/custom_header.conf':
-  ensure  => file,
-  content => "add_header X-Served-By $hostname;",
+# allows HTTP
+exec { 'allow HTTP':
+  command => "ufw allow 'Nginx HTTP'",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  onlyif  => '! dpkg -l nginx | egrep \'îi.*nginx\' > /dev/null 2>&1',
 }
 
-# removes default nginx configuration
+# creates a index file
+file { '/var/www/html/index.html':
+  content => "Hello World!\n",
+}
+
+# creates a 404 file
+file { '/var/www/html/404.html':
+  content => "Ceci n'est pas une page\n",
+}
+
+# creates an error directory
+file { '/var/www/error':
+  ensure => 'directory',
+}
+
+# changes folder rights
+exec { 'chmod www folder':
+  command => 'chmod -R 755 /var/www',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# adds a custom HTTP header to nginx config
 file { '/etc/nginx/sites-enabled/default':
-  ensure => absent,
-}
-
-# adds a  redirection and error page
-file { 'Nginx custom config file':
   ensure  => file,
-  path    => '/etc/nginx/sites-enabled/custom_config',
-  content =>
-"server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-
-    # Includes a  custom header configuration file
-    include /etc/nginx/conf.d/custom_header.conf;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-}",
+  content => "server {
+      listen 80 default_server;
+      listen [::]:80 default_server;
+      root /var/www/html;
+      index index.html index.htm index.nginx-debian.html;
+      server_name _;
+      add_header X-Served-By $hostname;
+      location / {
+          try_files \$uri \$uri/ =404;
+      }
+      if (\$request_filename ~ redirect_me){
+          rewrite ^ https://youtube.com permanent;
+      }
+      error_page 404 /404.html;
+      location = /404.html {
+          internal;
+      }
+  }",
 }
 
-# restart nginx
+# restarts nginx
 exec { 'restart service':
   command => 'service nginx restart',
   path    => '/usr/bin:/usr/sbin:/bin',
