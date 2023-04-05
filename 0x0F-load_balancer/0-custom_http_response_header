@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# The script configures web-02 to be identical to web-01,creates and enables custom HTTP header file
+# The script configures web-02 to be identical to web-01, creates and enables custom HTTP header file,
+# and creates basic HTML files in the web root.
 
 sudo apt-get update
 sudo apt-get install -y nginx
@@ -8,6 +9,10 @@ sudo apt-get install -y nginx
 echo "add_header X-Served-By \$hostname;" | sudo tee /etc/nginx/conf.d/custom-http-header.conf > /dev/null
 
 sudo ln -s /etc/nginx/conf.d/custom-http-header.conf /etc/nginx/conf.d/
+
+# Create basic HTML files in the web root
+echo 'Hello World!' | sudo tee /var/www/html/index.html > /dev/null
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html > /dev/null
 
 # Restart Nginx to apply new configuration
 sudo systemctl restart nginx
