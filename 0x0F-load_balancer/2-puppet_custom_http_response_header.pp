@@ -1,33 +1,15 @@
-# This script Installs Nginx and configures a custom HTTP response header
-class nginx_custom_header {
-  package { 'nginx':
-    ensure => installed,
-  }
+#!/usr/bin/env bash
 
-  file { '/etc/nginx/sites-available/default':
-    ensure  => file,
-    content => "server {
-      listen 80 default_server;
-      listen [::]:80 default_server;
+# create custom HTTP header file
+# configure web-02 to be identical to web-01
+# enable custom HTTP header file
 
-      root /var/www/html;
-      index index.html;
+sudo apt-get update
+sudo apt-get install -y nginx
 
-      server_name _;
+echo "add_header X-Served-By \$hostname;" | sudo tee /etc/nginx/conf.d/custom-http-header.conf > /dev/null
 
-      add_header X-Served-By ${::hostname};
+sudo ln -s /etc/nginx/conf.d/custom-http-header.conf /etc/nginx/conf.d/
 
-      location / {
-        try_files \$uri \$uri/ =404;
-      }
-    }",
-    notify  => Service['nginx'],
-  }
-
-  service { 'nginx':
-    ensure => running,
-    enable => true,
-  }
-}
-
-include nginx_custom_header
+# Restart Nginx to apply new configuration
+sudo systemctl restart nginx
