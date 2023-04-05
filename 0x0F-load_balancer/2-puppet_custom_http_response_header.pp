@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # adds a stable version of nginx
 exec { 'add nginx stable repo':
   command => 'sudo add-apt-repository ppa:nginx/stable',
