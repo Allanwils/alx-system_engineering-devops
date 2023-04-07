@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-# The script updates the package lists,
-# Installs Nginx,
-# Removes the default Nginx configurations,
-# Creates a symbolic link for Nginx configuration.
+# Eunsures Nginx runs and listens  on port 80 of all the server’s active IPv4 IPs
 
-apt-get update
 
 
 apt-get install -y nginx
