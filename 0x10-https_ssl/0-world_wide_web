@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
 # Configure your domain zone so that the subdomain www points to your load-balancer IP (lb-01)
-# add other subdomains to make our life easier, and write a Bash script that will display information about subdomains.
-# www -->    102967-lb-01   100.24.235.154
-# web-01 --> 102967-web-01  34.232.70.178
-# web-02 --> 102967-web-02  54.174.206.246
+
 
 subdomains_all=( "www" "lb-01" "web-01" "web-02" )
 
