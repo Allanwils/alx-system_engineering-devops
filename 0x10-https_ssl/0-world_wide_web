@@ -1,87 +1,27 @@
 #!/usr/bin/env bash
 
-# The script configures my domain zone so that the subdomain www points to my load-balancer IP (lb-01).
+# Configures domain zone so that the subdomain www points to load-balancer IP (lb-01)
 # www -->    102967-lb-01   100.24.235.154
 # web-01 --> 102967-web-01  34.232.70.178
 # web-02 --> 102967-web-02  54.174.206.246
 
-# Set domain and subdomains
-domain=$1
-subdomain=$2
-subdomains=("www" "lb-01" "web-01" "web-02")
+subdomains_all=( "www" "lb-01" "web-01" "web-02" )
 
-# Define function to get subdomain information
-getSubdomainInfo () {
+runDig () {
     subdomain=$1
     domain=$2
-    expected=$3
-    record_type=$4
 
-    # Get subdomain information using dig command
-    info=$(dig +short $subdomain.$domain)
-
-    # Check if subdomain information matches the expected value
-    if [ "$info" = "$expected" ]; then
-        echo "The subdomain $subdomain is a $record_type record and points to $expected"
-    else
-        echo "The subdomain $subdomain does not point to $expected"
-    fi
+    dig "$subdomain.$domain" +short | awk -v s="$subdomain" '{ print "The subdomain " s " is a A record and points to " $0 }'
 }
 
-# Check if subdomain argument was provided
-if [ -n "$subdomain" ]; then
-    # Get information for specified subdomain
-    case $subdomain in
-        "www")
-            expected="100.24.235.154"
-            record_type="A"
-            ;;
-        "lb-01")
-            expected="100.24.235.154"
-            record_type="A"
-            ;;
-        "web-01")
-            expected="34.232.70.178"
-            record_type="A"
-            ;;
-        "web-02")
-            expected="54.174.206.246"
-            record_type="A"
-            ;;
-        *)
-            echo "Invalid subdomain: $subdomain"
-            exit 1
-            ;;
-    esac
-
-    getSubdomainInfo $subdomain $domain $expected $record_type
-else
-    # Loop through subdomains and get information for each
-    for subdomain in "${subdomains[@]}"
+if [ $# -eq 1 ]; then
+    domain="$1"
+    for i in "${subdomains_all[@]}"
     do
-        case $subdomain in
-            "www")
-                expected="100.24.235.154"
-                record_type="A"
-                ;;
-            "lb-01")
-                expected="100.24.235.154"
-                record_type="A"
-                ;;
-            "web-01")
-                expected="34.232.70.178"
-                record_type="A"
-                ;;
-            "web-02")
-                expected="54.174.206.246"
-                record_type="A"
-                ;;
-            *)
-                echo "Invalid subdomain: $subdomain"
-                continue
-                ;;
-        esac
-
-        getSubdomainInfo $subdomain $domain $expected $record_type
+        runDig "$i" "$domain"
     done
+elif [ $# -eq 2 ]; then
+    domain="$1"
+    subdomain="$2"
+    runDig "$subdomain" "$domain"
 fi
