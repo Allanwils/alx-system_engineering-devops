@@ -6,23 +6,44 @@
 
 
 
-subdomains_all=( "www" "lb-01" "web-01" "web-02" )
+# Set domain and subdomains
+domain="codetones.tech"
+subdomains=("www" "lb-01" "web-01" "web-02")
 
-runDig () {
+# Define function to get subdomain information
+getSubdomainInfo () {
     subdomain=$1
     domain=$2
+    expected=$3
 
-    dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v s="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " s " is a " $4 " record and points to " $5 }'
+    # Get subdomain information using dig command
+    info=$(dig +short $subdomain.$domain)
+
+    # Check if subdomain information matches the expected value
+    if [ "$info" = "$expected" ]; then
+        echo "Your subdomain $subdomain points to your $subdomain server IP"
+    else
+        echo "Your subdomain $subdomain does not point to your $subdomain server IP"
+    fi
 }
 
-if [ $# -eq 1 ]; then
-    domain="$1"
-    for i in "${subdomains_all[@]}"
-    do
-	runDig "$i" "$domain"
-    done
-elif [ $# -eq 2 ]; then
-    domain="$1"
-    subdomain="$2"
-    runDig "$subdomain" "$domain"
-fi
+# Loop through subdomains and get information for each
+for subdomain in "${subdomains[@]}"
+do
+    case $subdomain in
+        "www")
+            expected="100.24.235.154"
+            ;;
+        "web-01")
+            expected="34.232.70.178"
+            ;;
+        "web-02")
+            expected="54.174.206.246"
+            ;;
+        *)
+            echo "Invalid subdomain: $subdomain"
+            ;;
+    esac
+
+    getSubdomainInfo $subdomain $domain $expected
+done
