@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Configures the domain zone so that the subdomain www points to your load-balancer IP (lb-01)
 
-
 function audit_subdomain() {
     local domain="$1"
     local subdomain="$2"
     local output=$(dig +short "$subdomain.$domain" | awk '{print $1}')
-    local record_type=$(dig +short "$subdomain.$domain" | awk '{print $4}')
+    local record_type=$(dig +short "$subdomain.$domain" | awk '{print $2}')
+    if [ -z "$record_type" ]; then
+        record_type="A"
+    fi
     echo "The subdomain $subdomain is a $record_type record and points to $output"
 }
 
