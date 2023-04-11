@@ -41,10 +41,11 @@ frontend http-in
 frontend https-in
     bind *:443 ssl crt /etc/haproxy/certs/haproxy.pem
     default_backend webservers
+    http-response set-status 200 if { ssl_fc }
 
 backend webservers
     balance roundrobin
     option httpchk GET /
 
-    server  102967-web-01 34.232.70.178:80 check
-    server  102967-web-02 54.174.206.246:80 check
+    server 102967-web-01 34.232.70.178:80 check
+    server 102967-web-02 54.174.206.246:80 check
