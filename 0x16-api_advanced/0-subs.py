@@ -1,11 +1,32 @@
 #!/usr/bin/python3
 """
-Function for number_of_subscribers
+This module provides a function for retrieving the number of subscribers for a given subreddit on Reddit.
+
+Function:
+number_of_subscribers(subreddit: str) -> int
+- Takes a subreddit name as a string parameter.
+- Returns the number of subscribers for the given subreddit as an integer.
+- If the subreddit does not exist or an error occurs, returns 0.
 """
 
 import requests
 
+
 def number_of_subscribers(subreddit):
+    """
+    Retrieve the number of subscribers for a given subreddit on Reddit.
+
+    Args:
+        subreddit (str): The name of the subreddit to retrieve the number of subscribers for.
+
+    Returns:
+        int: The number of subscribers for the given subreddit.
+
+    Raises:
+        requests.exceptions.HTTPError: If a non-404 HTTP error occurs.
+        requests.exceptions.RequestException: If an error occurs while making the request.
+
+    """
     url = f"https://www.reddit.com/r/{subreddit}/about.json"
     headers = {'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Allanwils)'}
     try:
