@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 """
-Function for recursive query of Reddit API and sorted count of given keywords
+This module contains a function for recursively querying the Reddit API
+and counting the occurrences of given keywords in the titles of all hot articles.
+
+Author: Allanwils
+Version: 1.0
 """
 
 import requests
