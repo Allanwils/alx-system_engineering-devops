@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Recursive function queries the Reddit API and prints a sorted count
+Function for recursive query of Reddit API and sorted count of given keywords
 """
 
 import requests
@@ -38,7 +38,10 @@ def count_words(subreddit, word_list, after=None, word_count={}):
 
     # fetch the hot articles from the subreddit
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {"User-Agent": "Mozilla/5.0"}
+    headers = {"User-Agent": "Mozilla/5.0",
+               "Author": "Allanwils",
+               "Version": "1.0"
+              }
     params = {"limit": 100}
     if after:
         params["after"] = after

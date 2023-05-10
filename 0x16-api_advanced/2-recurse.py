@@ -13,7 +13,7 @@ def recurse(subreddit, hot_list=[], after=None):
     for the given subreddit, the function should return None.
     """
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {'User-agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Allanwils)'}
 
     # If after parameter is not None, add it to the URL
     if after:

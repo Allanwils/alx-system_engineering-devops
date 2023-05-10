@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """
-Function for number_of_subscribers 
+Function for number_of_subscribers
 """
 
 import requests
 
 def number_of_subscribers(subreddit):
     url = f"https://www.reddit.com/r/{subreddit}/about.json"
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Allanwils)'}
     try:
         response = requests.get(url, headers=headers, allow_redirects=False)
         response.raise_for_status()
@@ -20,10 +20,10 @@ def number_of_subscribers(subreddit):
     except requests.exceptions.RequestException as error:
         print(f"An error occurred: {error}")
         return 0
-    
+
     data = response.json()
     if 'data' not in data or 'subscribers' not in data['data']:
         print(f"Invalid response data from Reddit API for subreddit {subreddit}.")
         return 0
-    
+
     return data['data']['subscribers']
