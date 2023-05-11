@@ -1,6 +1,15 @@
 #!/usr/bin/python3
 """
 Contains function for the number_of_subscribers
+
+This module provides a function to get the number of subscribers for a given subreddit using the Reddit API.
+
+Note:
+    This function relies on the availability and stability of the Reddit API. If the API changes or is unavailable, 
+    this function may not work as intended.
+
+If you plan to use this function for commercial or high-traffic purposes, make sure to comply with the Reddit API 
+terms of use and follow proper API etiquette, such as adding rate limiting and error handling.
 """
 
 import requests
