@@ -1,38 +1,40 @@
 #!/usr/bin/python3
 """
-Recursive function that queries the Reddit API and returns a sudreddit list
+This module provides a function that recursively returns a list of all hot post titles for a given subreddit.
 """
 
 import requests
 
 
-def recurse(subreddit, hot_list=[], after=None):
+def recurse(subreddit: str, hot_list: list = [], after: str = None) -> list:
     """
-    Recursive function that queries the Reddit API and returns a list containing
-    the titles of all hot articles for a given subreddit. If no results are found
-    for the given subreddit, the function should return None.
+    Recursively returns a list of all hot post titles for a given subreddit.
+    
+    :param subreddit: The name of the subreddit.
+    :param hot_list: The list of hot post titles. Default is an empty list.
+    :param after: A token for pagination. Default is None.
+    :return: A list of all hot post titles for the given subreddit.
     """
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Allanwils)'}
-
-    # If after parameter is not None, add it to the URL
-    if after:
-        url += f"?after={after}"
-
-    response = requests.get(url, headers=headers)
-
-    # Check if subreddit exists
-    if response.status_code != 200:
+    if subreddit is None or not isinstance(subreddit, str):
         return None
-
-    data = response.json()['data']
-
-    # Add titles to hot_list
-    for child in data['children']:
-        hot_list.append(child['data']['title'])
-
-    # If there is a next page, recursively call recurse() with the after parameter
-    if data['after']:
-        recurse(subreddit, hot_list, after=data['after'])
-
-    return hot_list
+    
+    r = requests.get(f'http://www.reddit.com/r/{subreddit}/hot.json',
+                     headers={'User-Agent': 'Masiga'},
+                     params={'after': after}).json()
+    after = r.get('data', {}).get('after', None)
+    posts = r.get('data', {}).get('children', None)
+    
+    if posts is None or (len(posts) > 0 and posts[0].get('kind') != 't3'):
+        if len(hot_list) == 0:
+            return None
+        return hot_list
+    else:
+        for post in posts:
+            hot_list.append(post.get('data', {}).get('title', None))
+            
+    if after is None:
+        if len(hot_list) == 0:
+            return None
+        return hot_list
+    else:
+        return recurse(subreddit, hot_list, after)
