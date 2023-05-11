@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 This module contains the function top_ten, which can be used to print the titles
 of the top ten hot posts for a given subreddit.

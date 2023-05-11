@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 Contains function for the number_of_subscribers
 """
