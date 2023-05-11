@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """
 Contains function for the number_of_subscribers
 """
@@ -22,7 +23,6 @@ def number_of_subscribers(subreddit):
     if subreddit is None or type(subreddit) is not str:
         return 0
     r = requests.get('http://www.reddit.com/r/{}/about.json'.format(subreddit),
-                     headers={'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Masiga)'}).json()
+                     headers={'User-Agent': 'Masiga'}).json()
     subs = r.get("data", {}).get("subscribers", 0)
     return subs
-
