@@ -4,6 +4,17 @@
 This module contains the function top_ten, which can be used to print the titles
 of the top ten hot posts for a given subreddit.
 
+Usage:
+    top_ten(subreddit)
+
+Input:
+    subreddit: A string representing the subreddit whose top ten hot posts need
+    to be printed.
+
+Output:
+    Prints the titles of the top ten hot posts for the given subreddit, or None
+    if the subreddit is invalid or there are no hot posts available.
+
 """
 
 import requests
@@ -28,9 +39,10 @@ def top_ten(subreddit):
         return
 
     # Make a request to get the top ten hot posts for the given subreddit
-    r = requests.get('http://www.reddit.com/r/{}/hot.json'.format(subreddit),
-                     headers={'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Masiga)'},
-                     params={'limit': 10}).json()
+    url = 'http://www.reddit.com/r/{}/hot.json'.format(subreddit)
+    headers = {'User-Agent': 'Python/requests:APIproject:v1.0.0 (by /u/Masiga)'}
+    params = {'limit': 10}
+    r = requests.get(url, headers=headers, params=params).json()
 
     # Check if the request was successful and get the list of posts
     posts = r.get('data', {}).get('children', None)
