@@ -1,6 +1,9 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
 This module contains a function that performs a recursive query of the Reddit API and sorts the count of given keywords.
+
+Author: Masiga
+Date: 12/05/2023
 """
 
 import requests
@@ -22,7 +25,6 @@ def count_words(subreddit: str, word_list: list, after: str = None, word_count: 
     Returns:
         None.
     """
-
     if not word_list:
         # base case: no more words to count
         sorted_word_count = sorted(
@@ -40,7 +42,7 @@ def count_words(subreddit: str, word_list: list, after: str = None, word_count: 
     # fetch the hot articles from the subreddit
     url = f"https://www.reddit.com/r/{subreddit}/hot.json"
     headers = {"User-Agent": "Mozilla/5.0",
-               "Author": "Allanwils",
+               "Author": "Masiga",
                "Version": "1.0"
               }
     params = {"limit": 100}
