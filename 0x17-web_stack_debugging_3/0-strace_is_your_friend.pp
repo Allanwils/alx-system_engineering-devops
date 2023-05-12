@@ -1,12 +1,6 @@
-# Fix Apache 500 error
-class apache {
-  exec { 'fix-apache':
-    command => '/usr/local/bin/fix-apache',
-    onlyif  => 'test $(curl -s -o /dev/null -w "%{http_code}" http://localhost) = 200',
-  }
+# Corrects bad `phpp` extensions to `php` in wp file `wp_test.php`.
 
-  service { 'apache2':
-    ensure => running,
-  }
+exec { 'fix-wordpress':
+  command => 'sed -i s/phpp/php/g /var/www/html/wp_test.php',
+  path    => '/usr/local/bin/:/bin/'
 }
-include apache
