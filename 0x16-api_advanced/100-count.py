@@ -1,77 +1,61 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
-This module contains a function that performs a recursive query of the Reddit API and sorts the count of given keywords.
+This module provides a function to count the occurrences of a given list of words in the titles of hot posts in a given subreddit.
 
-Author: Masiga
-Date: 12/05/2023
+Functions:
+- count_words(subreddit: str, word_list: List[str], found_list: Optional[List[str]] = [], after: Optional[str] = None) -> None
 """
 
 import requests
+from typing import List, Optional
 
-
-def count_words(subreddit: str, word_list: list, after: str = None, word_count: dict = {}) -> None:
+def count_words(subreddit: str, word_list: List[str], found_list: Optional[List[str]] = [], after: Optional[str] = None) -> None:
     """
-    Recursively queries the Reddit API for the given subreddit,
-    parses the title of all hot articles, and prints a sorted count
-    of given keywords (case-insensitive, delimited by spaces).
+    Count the occurrences of a given list of words in the titles of hot posts in a given subreddit.
 
     Args:
-        subreddit (str): The name of the subreddit to query.
-        word_list (list): A list of keywords to count.
-        after (str): A token used to fetch the next page of results.
-        word_count (dict): A dictionary used to keep track of the counts
-                           for each keyword.
+    - subreddit (str): The subreddit to search for hot posts.
+    - word_list (List[str]): A list of words to search for in the titles of hot posts.
+    - found_list (Optional[List[str]]): A list of words that have already been found in the titles of hot posts.
+    - after (Optional[str]): The ID of the last post in the previous request. Used to paginate through the results.
 
     Returns:
-        None.
+    - None: The function prints the result to the console.
+
+    Raises:
+    - None.
+
+    Example:
+    >>> count_words("news", ["trump", "biden", "election"])
+    trump: 5
+    election: 3
+    biden: 2
     """
-    if not word_list:
-        # base case: no more words to count
-        sorted_word_count = sorted(
-            word_count.items(),
-            key=lambda x: (-x[1], x[0])
-        )
+    user_agent = {'User-agent': 'test45'}
+    posts = requests.get(f"http://www.reddit.com/r/{subreddit}/hot.json?after={after}", headers=user_agent)
 
-        for word, count in sorted_word_count:
-            print(f"{word}: {count}")
-        return
+    if after is None:
+        word_list = [word.lower() for word in word_list]
 
-    # pop the next word from the list
-    word = word_list.pop().lower()
-
-    # fetch the hot articles from the subreddit
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {"User-Agent": "Mozilla/5.0",
-               "Author": "Masiga",
-               "Version": "1.0"
-              }
-    params = {"limit": 100}
-    if after:
-        params["after"] = after
-
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code == 200:
-        # parse the titles of the hot articles
-        data = response.json()["data"]
-        after = data["after"]
-
-        for child in data["children"]:
-            title = child["data"]["title"].lower()
-            count = title.count(word)
-            if count:
-                # update the count for the word
-                if word in word_count:
-                    word_count[word] += count
+    if posts.status_code == 200:
+        posts = posts.json()['data']
+        aft = posts['after']
+        posts = posts['children']
+        for post in posts:
+            title = post['data']['title'].lower()
+            for word in title.split(' '):
+                if word in word_list:
+                    found_list.append(word)
+        if aft is not None:
+            count_words(subreddit, word_list, found_list, aft)
+        else:
+            result = {}
+            for word in found_list:
+                if word.lower() in result.keys():
+                    result[word.lower()] += 1
                 else:
-                    word_count[word] = count
-
-        # call the function recursively with the next word and the
-        # updated word count dictionary
-        count_words(subreddit, word_list, after, word_count)
+                    result[word.lower()] = 1
+            for key, value in sorted(result.items(), key=lambda item: item[1], reverse=True):
+                print(f"{key}: {value}")
     else:
-        print(f"Error: failed to fetch data from {url}.")
-
-
-if __name__ == "__main__":
-    count_words("programming", ["Python", "Java", "C++"])
+        return
