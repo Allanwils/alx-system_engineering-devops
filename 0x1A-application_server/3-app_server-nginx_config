@@ -5,7 +5,7 @@ server {
 
     index index.html index.htm index.nginx-debian.html;
 
-    server_name 34.232.70.178;
+    server_name 18.207.139.96;
 
     location /airbnb-dynamic/number_odd_or_even/ {
         proxy_pass http://127.0.0.1:5001;
