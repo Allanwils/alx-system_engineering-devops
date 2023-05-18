@@ -1,0 +1,17 @@
+server {
+    listen 80 default_server;
+
+    root /var/www/html;
+
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name 18.207.139.96;
+
+    location / {
+        proxy_pass http://0.0.0.0:5003;
+    }
+
+    location /static/ {
+        alias AirBnB_clone_v4/web_dynamic/static/;
+    }
+}
