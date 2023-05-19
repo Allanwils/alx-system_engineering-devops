@@ -6,5 +6,12 @@ server {
         proxy_pass http://localhost:5000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Served-By $hostname;
+        add_header X-Served-By 102967-web-01;
+    }
+
+    location = /favicon.ico {
+        access_log off;
+        log_not_found off;
     }
 }
