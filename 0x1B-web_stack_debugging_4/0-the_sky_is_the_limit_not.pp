@@ -42,7 +42,7 @@ service { 'nginx':
 
 # Run ApacheBench to simulate HTTP requests
 exec { 'benchmark':
-  command => 'ab -n 2000 -c 100 http://localhost/',
+  command => 'ab -n 1000 -c 100 http://localhost/',
   path    => '/usr/bin',
   require => Service['nginx'],
 }
