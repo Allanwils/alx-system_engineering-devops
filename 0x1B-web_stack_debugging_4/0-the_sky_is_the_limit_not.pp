@@ -7,7 +7,7 @@ package { 'apache2-utils':
 }
 
 # Configure Nginx
-class nginx {
+class web_stack_debugging::nginx {
   package { 'nginx':
     ensure => installed,
   }
@@ -30,14 +30,14 @@ class nginx {
 
 # Perform benchmarking using ApacheBench
 exec { 'benchmark':
-  command     => 'ab -n 2000 -c 100 http://localhost/',
+  command     => 'ab -n 1000 -c 100 http://localhost/',
   logoutput   => true,
   refreshonly => true,
   subscribe   => Service['nginx'],
 }
 
 # Fix the web stack based on the benchmark results
-class fix_web_stack {
+class web_stack_debugging::fix_web_stack {
   # Analyze logs
   file { '/var/log/nginx/access.log':
     ensure => present,
@@ -68,5 +68,5 @@ class fix_web_stack {
 }
 
 # Apply the manifest
-class { 'nginx': }
-class { 'fix_web_stack': }
+class { 'web_stack_debugging::nginx': }
+class { 'web_stack_debugging::fix_web_stack': }
