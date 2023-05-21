@@ -47,6 +47,6 @@ exec { 'benchmark':
   require => Service['nginx'],
 }
 
-notify { 'Score':
+notify { 'Score': 0
   message => 'Your Puppet manifest fixes adjust the web stack so that it can handle 1000 requests with 100 at a time',
 }
